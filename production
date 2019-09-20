@@ -1,0 +1,7 @@
+# file: production
+
+[wall_rp4s]
+172.16.1.28
+
+[rp4s:children]
+wall_rps4s
