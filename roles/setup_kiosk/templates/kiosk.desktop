@@ -1,0 +1,7 @@
+
+[Desktop Entry]
+Type=Application
+Name=Kiosk
+Exec=/home/{{ autostart_user }}/kiosk.sh
+X-GNOME-Autostart-enabled=true
+

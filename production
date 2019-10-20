@@ -1,7 +1,6 @@
 # file: production
-
-[wall_rp4s]
-172.16.1.28
+[lxrp4s]
+172.16.1.28 pi_name=kiosk1 url1=https://google.com url2=https://github.com
 
 [rp4s:children]
-wall_rps4s
+lxrp4s

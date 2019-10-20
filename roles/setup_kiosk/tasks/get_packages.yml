@@ -1,0 +1,23 @@
+---
+- name: apt upgrade cache and autoclean autoremove 
+  become: true
+  apt:
+    upgrade: yes
+    update_cache: yes
+    cache_valid_time: 86400
+    autoremove: yes
+    install_recommends: no
+
+- name: Perform apt full-upgrade
+  become: true
+  apt:
+    upgrade: full
+
+- name: Install required packages
+  apt:
+    name: "{{ required_packages }}"
+    state: present
+
+- name: Reboot to make sure packages are installed correctly
+  reboot:
+    reboot_timeout: 3600

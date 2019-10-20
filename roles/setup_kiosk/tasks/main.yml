@@ -1,0 +1,10 @@
+- name: Get packages
+  import_tasks: get_packages.yml
+  notify: Reboot
+- name: setup kiosk
+  import_tasks: setup_kiosk.yml
+  notify: Reboot
+- name: Harden PI
+  import_tasks: harden.yml
+  notify: Reboot
+

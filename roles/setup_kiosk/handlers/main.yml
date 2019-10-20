@@ -1,0 +1,18 @@
+---
+# handlers file for common
+- name: Remove Chromium Singleton
+  file:
+    path="/home/{{ autostart_user }}/.config/chromium/Singleton*"
+    state=absent
+
+- name: Restart ssh
+  service: name=ssh state=restarted
+
+- name: Reboot
+  reboot:
+    msg: Ansible Configuration Finished Now Rebooting
+
+- name: Restart lightdm
+  service:
+    name: lightdm
+    state: restarted

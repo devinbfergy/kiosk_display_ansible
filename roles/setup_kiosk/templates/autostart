@@ -1,0 +1,7 @@
+
+
+@xset s off
+@xset -dpms
+@xset s noblank
+@sed -t 's/"exited_cleanly": false/"exited_cleanly": true/' /home/{{ autostart_user }}/.config/chromium/Default/Prefrences
+

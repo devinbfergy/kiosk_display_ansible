@@ -1,0 +1,24 @@
+---
+server_user_name: kiosk_admin
+server_user_password: raspberry
+#user_public_keys:
+#  - ~/.ssh/id_rsa.pub
+
+autostart_user: pi
+
+required_packages:
+  - ufw
+  - chromium-browser
+  - unclutter
+  - lxde
+  - python3-pip
+
+
+timezone: America/Chicago
+
+user_public_keys: ~/.ssh/ansible_id.pub
+
+ufw_allowed_ports:
+  - 22
+  - 80
+  - 443

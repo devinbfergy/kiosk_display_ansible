@@ -1,0 +1,79 @@
+---
+
+
+- name: Copy the lightdm configuration
+  become: true
+  template: 
+    src: lightdm.conf 
+    dest: /etc/lightdm/lightdm.conf
+
+- name: Make config directory with autostart and lxsession/LXDE
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ autostart_user }}"
+  with_items:
+    - /home/{{autostart_user}}/.config
+    - /home/{{autostart_user}}/.config/autostart
+    - /home/{{autostart_user}}/.config/lxsession
+    - /home/{{autostart_user}}/.config/lxsession/LXDE
+    
+- name: Copy autostart to LXDE config
+  become: true
+  template: 
+    src: autostart
+    dest: /home/{{ autostart_user }}/.config/lxsession/LXDE/autostart
+
+- name: create autostart configuration directory
+  become: true
+  file:
+    path: /home/{{autostart_user}}/.config/autostart
+    state: directory
+    owner: "{{ autostart_user }}"
+    group: root
+
+- name: Copy kiosk.desktop configuration
+  become: true
+  template: 
+    src: kiosk.desktop 
+    dest: /home/{{ autostart_user }}/.config/autostart/kiosk.desktop
+
+- name: Make Screen directory 1
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ autostart_user }}"
+    group: root
+  with_items:
+    - /home/{{ autostart_user }}/screen1
+    - /home/{{ autostart_user }}/screen2
+
+- name: Copy kiosk.sh
+  template: 
+    src: kiosk.sh 
+    dest: /home/{{ autostart_user }}/kiosk.sh
+
+- name: Setup File permissions for kiosk.sh
+  file:
+    path: /home/{{ autostart_user }}/kiosk.sh
+    owner: "{{ autostart_user }}"
+    group: root
+    mode: u+rx-w,g+rwx,o-rwx
+
+- name: Set Hostname
+  hostname: 
+    name: "{{ pi_name }}"
+  notify: Remove Chromium Singleton
+
+- name: Set hostname in hosts file
+  replace:
+    dest: /etc/hosts
+    regexp: "raspberrypi" 
+    replace: "{{ pi_name }}"
+
+- name: Set Timezone
+  timezone: name={{ timezone }}
+
+- name: Reboot to apply kiosk changes
+  reboot:
+    reboot_timeout: 3200

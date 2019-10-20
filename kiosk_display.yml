@@ -1,3 +1,9 @@
-- hosts: rp4s
+---
+- name: Setup RPI's with headless raspbian to be kiosk displays
+  hosts: rp4s
+  remote_user: pi
+  become: yes
   roles: 
-    - common
+    - setup_kiosk
+      #- ansible-hardening 
+
