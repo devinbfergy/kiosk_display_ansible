@@ -7,17 +7,16 @@
     cache_valid_time: 86400
     autoremove: yes
     install_recommends: no
+  notify: restart server
 
 - name: Perform apt full-upgrade
   become: true
   apt:
     upgrade: full
+  notify: restart server
 
 - name: Install required packages
   apt:
     name: "{{ required_packages }}"
-    state: present
-
-- name: Reboot to make sure packages are installed correctly
-  reboot:
-    reboot_timeout: 3600
+    state: latest
+  notify: restart server

@@ -3,5 +3,10 @@
 @xset s off
 @xset -dpms
 @xset s noblank
+@xmodmap -e "keycode 37 = "
+@xmodmap -e "keycode 105 = "
+@xmodmap -e "keycode 133 = "
+@xmodmap -e "keycode 134 = "
+@xmodmap -e "keycode 67 = "
 @sed -t 's/"exited_cleanly": false/"exited_cleanly": true/' /home/{{ autostart_user }}/.config/chromium/Default/Prefrences
 

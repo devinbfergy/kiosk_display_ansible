@@ -1,8 +1,7 @@
 ---
 server_user_name: kiosk_admin
+
 server_user_password: raspberry
-#user_public_keys:
-#  - ~/.ssh/id_rsa.pub
 
 autostart_user: pi
 
@@ -12,13 +11,35 @@ required_packages:
   - unclutter
   - lxde
   - python3-pip
-
+  - needrestart
+  - debsecan
+  - debsums
+  - fail2ban
+  - debian-goodies
+  - rkhunter
 
 timezone: America/Chicago
 
 user_public_keys: ~/.ssh/ansible_id.pub
 
-ufw_allowed_ports:
-  - 22
-  - 80
-  - 443
+admin_net: 172.16.1.0/24
+
+log_host: loghost.example.com
+
+log_port: 512
+
+fs_modules_blacklist:
+  - cramfs
+  - freevxfs
+  - hfs
+  - hfsplus
+  - jffs2
+  - squashfs
+  - udf
+  - vfat
+
+ssh_allow_groups: admin
+
+ssh_max_auth_tries: 2
+
+ssh_max_sessions: 2

@@ -1,9 +1,41 @@
 ---
 - name: Setup RPI's with headless raspbian to be kiosk displays
   hosts: rp4s
-  remote_user: pi
   become: yes
   roles: 
     - setup_kiosk
-      #- ansible-hardening 
 
+#- name: Harden all systems
+#  hosts: all
+#  become: yes
+#  vars:
+#    security_enable_graphical_login_message_text: >
+#        You are accessing a secured system and your actions will be logged along
+#        with identifying information. Disconnect immediately if you are not an 
+#        authorized user of this system.
+#    security_lock_session: no
+#    security_lock_session_when_inactive: no
+#    security_disable_gdm_automatic_login: no
+#  roles:
+#    - ansible-hardening 
+- name: Harden systems
+  hosts: all
+  become: yes
+  roles:
+          #- ansible-role-hardening
+  vars:
+    sshd_admin_net: [172.16.1.0/24]
+    ssh_allow_groups: sudo
+    suid_sgid_blacklist: [/bin/ntfs-3g, /usr/bin/at, /bin/fusermount, /bin/mount, /bin/ping, /bin/ping6, /bin/unmount, /sbin/mount.nfs, /usr/bin/bsd-write, /usr/bin/chage, /usr/bin/chfn, /usr/bin/chsh, /usr/bin/mlocate, /usr/bin/mtr, /usr/bin/newgrp, /usr/bin/pkexec, /usr/bin/traceroute6.iputils, /usr/bin/wall, /usr/bin/write, /usr/sbin/pppd]
+    random_ack_limit: "{{ 1000000 | random(start=1000) }}"
+    packages_debian: [acct, aide-common, apparmor-profiles, apparmor-utils, debsums, haveged, libpam-apparmor, libpam-cracklib, libpam-tmpdir, needrestart, openssh-server, postfix, rkhunter, rsyslog, tcpd, vlock]
+    packages_blacklist: [apport*, avahi*, avahi-*, beep, git, popularity-contest, rsh*, talk*, telnet*, tftp*, whoopsie, xinetd, yp-tools, ypbind]
+    net_modules_blacklist: [ ]
+    fs_modules_blacklist: [ ]
+    misc_modules_blacklist: [bluetooth, bnep, btusb, firewire-core, n_hdlc, net-pf-31, pcspkr, soundcore, thunderbolt, usb-midi, usb-storage]
+    limit_nofile_soft: 100
+    limit_nofile_hard: 150
+    limit_nproc_soft: 100
+    limit_nproc_hard: 150
+    grub_cmdline:
+    

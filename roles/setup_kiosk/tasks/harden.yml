@@ -29,32 +29,103 @@
   with_items:
     - "{{ user_public_keys }}"
 
-- name: Remove root ssh access
-  action: lineinfile dest=/etc/ssh/sshd_config regexp="^PermitRootLogin" line="PermitRootLogin no" state=present
-  notify: Restart ssh
+- name: sshd_config
+  template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config
+    backup: 'yes'
+    mode: 0600
+    owner: root
+    group: root
+  notify:
+    - restart sshd
 
-- name: Disallow password authentication ssh
-  action: lineinfile dest=/etc/ssh/sshd_config regexp="^PasswordAuthentication" line="PasswordAuthentication no" state=present
-  notify: Restart ssh
-
-- name: Allow ssh and http/https with UFW
+- name: Allow http/https with UFW
   ufw:
     rule: allow
     port: "{{ item }}"
   with_items:
-    - "{{ ufw_allowed_ports }}"
+    - "80"
+    - "443"
+
+- name: Allow SSH from admin network or from particular IP
+  ufw:
+    rule: allow
+    src: "{{ item }}"
+    port: 22
+    proto: tcp
+  with_items:
+    - "{{ admin_net }}"
 
 - name: Enable ufw
   ufw:
     state: enabled
+    direction: incoming
     policy: deny
+    logging: low
+
+- name: send to syslog server via rsyslog
+  lineinfile:
+    path: /etc/rsyslog.conf
+    line: "*.* @@{{ log_host }}:{{ log_port }}"
 
 - name: Remove pi user from sudo group
   command: deluser pi sudo
   ignore_errors: yes
 
-- name: Remove pi user  from sudoers.d folder
+- name: Remove pi user from sudoers.d folder
   file:
     state: absent
-    path: /etc/sudoers.d/010_pi-nopasswd
+    path: /etc/sudoers.d/010_pi-nopasswd 
 
+- name: disablefs.conf
+  file:
+    state: touch
+    path: /etc/modprobe.d/disablefs.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: disable file system kearnel modules
+  lineinfile:
+    dest: /etc/modprobe.d/disablefs.conf
+    line: "install {{ item }} /bin/true"
+  with_items:
+    - "{{ fs_modules_blacklist }}"
+
+- name: disable ctrl-alt-del
+  systemd:
+    name: ctrl-alt-del.target
+    masked: 'yes'
+    enabled: 'no'
+    state: stopped
+
+- name: Password settings
+  lineinfile:
+    dest: '/etc/login.defs'
+    regexp: "PASS_MAX_DAYS"
+    line: "PASS_MAX_DAYS 90"
+    state: present
+
+- name: Set Password Expiration Days
+  lineinfile:
+    dest: '/etc/login.defs'
+    regexp: "PASS_MIN_DAYS"
+    line: "PASS_MIN_DAYS 7"
+    state: present
+
+- name: Set Default umask for Users
+  lineinfile:
+    dest: '/etc/login.defs'
+    regexp: "UMASK"
+    line: "UMASK 077"
+    state: present
+
+- name: disable ctrl-alt-del
+  systemd:
+    name: ctrol-alt-del.target
+    masked: 'yes'
+    enabled: 'no'
+    state: stopped
+
+---

@@ -5,12 +5,14 @@
     path="/home/{{ autostart_user }}/.config/chromium/Singleton*"
     state=absent
 
-- name: Restart ssh
-  service: name=ssh state=restarted
+- name: restart sshd
+  service: 
+    name: sshd 
+    state: restarted
 
-- name: Reboot
+- name: restart server
   reboot:
-    msg: Ansible Configuration Finished Now Rebooting
+    reboot_timeout: 3600
 
 - name: Restart lightdm
   service:

@@ -6,6 +6,10 @@
   template: 
     src: lightdm.conf 
     dest: /etc/lightdm/lightdm.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart lightdm
 
 - name: Make config directory with autostart and lxsession/LXDE
   file:
@@ -70,10 +74,8 @@
     dest: /etc/hosts
     regexp: "raspberrypi" 
     replace: "{{ pi_name }}"
+  notify: restart server
 
 - name: Set Timezone
   timezone: name={{ timezone }}
-
-- name: Reboot to apply kiosk changes
-  reboot:
-    reboot_timeout: 3200
+  notify: restart server
